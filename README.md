@@ -19,8 +19,6 @@ This repository is designed to help both **interviewers** and **candidates** pre
 10. [General / Architecture](./questions/10_general.md)  
 11. [Home Assignments](./home-assignments/assignment_1.md)
 
-> **Note**: If you have older references to `03_docker/questions.md` or similar, please update them to the new file paths shown above.
-
 ---
 
 ## How to Use
