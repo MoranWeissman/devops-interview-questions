@@ -1,6 +1,6 @@
 # 05 – Kubernetes
 
-Covers the basic K8s concepts: pods, services, ingress, CRDs, and commands.
+Core K8s topics: pods, services, ingress, CRDs, and debugging.
 
 ## Table of Contents
 1. Deploying a New Application
@@ -13,6 +13,9 @@ Covers the basic K8s concepts: pods, services, ingress, CRDs, and commands.
 8. Service-to-Service Communication
 9. Sidecar/Init Containers
 10. Bonus: Resource Name Limits
+11. **Scenario: RBAC Permissions for Kaniko Builds**
+12. **Scenario: Kubernetes Pod Logs Lost After Crash**
+13. **Scenario: Resource Exhaustion (OOMKills) in Pods**
 
 ---
 
@@ -23,9 +26,9 @@ If you have a new microservice to run in Kubernetes, what resources do you usual
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Usually a **Deployment** (or StatefulSet, if stateful) and a **Service**.  
-  - An Ingress or LoadBalancer if you need external access.  
-  - Might use Helm if you want templating.
+  - Usually a **Deployment** (or StatefulSet if stateful) and a **Service**.
+  - Possibly an Ingress or LoadBalancer if external access is required.
+  - Might use Helm for templating.
 </details>
 
 ---
@@ -37,8 +40,8 @@ What does a Service do in Kubernetes, and how is it different from an Ingress?
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **Service**: Exposes pods at a stable address, can be ClusterIP, NodePort, or LoadBalancer.  
-  - **Ingress**: Lets you define routing rules for HTTP/HTTPS traffic to one or more Services.
+  - **Service**: Exposes pods at a stable address, can be ClusterIP, NodePort, or LoadBalancer.
+  - **Ingress**: Defines routing rules for HTTP/HTTPS traffic to one or more Services.
 </details>
 
 ---
@@ -50,9 +53,9 @@ How do CRDs (Custom Resource Definitions) and Operators help you extend Kubernet
 <details>
   <summary>Hints / Key Points</summary>
 
-  - A **CRD** adds a new type of object (e.g., “MyDatabase”) to the cluster.  
-  - An **Operator** watches these CRDs and automates tasks like setting up or managing them.  
-  - Good for complex or stateful apps, so K8s can handle them in a more “self-service” way.
+  - A **CRD** adds a new type of object (like “MyDatabase”) to the cluster.
+  - An **Operator** watches these CRDs and automates tasks (install, upgrade, manage).
+  - Good for complex/stateful apps so K8s can handle them more natively.
 </details>
 
 ---
@@ -64,9 +67,9 @@ Your app keeps crashing after a few minutes in Kubernetes. How would you check w
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Look at **logs** from the pod’s container(s).  
-  - Check the events or error messages for that pod.  
-  - See if it’s an OOM kill, a code issue, or a config problem.
+  - Inspect logs from the pod/container.
+  - Check events or error messages for the pod.
+  - See if it’s an OOM kill, code exception, or config problem.
 </details>
 
 ---
@@ -78,8 +81,8 @@ Sometimes a pod or other resource is stuck “Terminating” for a long time. Wh
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Could be **finalizers** that aren’t cleaned up.  
-  - The app might not handle termination signals well, so it never exits.  
+  - **Finalizers** might be blocking deletion.
+  - The app might not handle termination signals well, so it never exits.
   - You can remove the finalizer or do a force delete if absolutely needed.
 </details>
 
@@ -92,9 +95,9 @@ You need to run commands inside a container for debugging. How do you do that in
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Usually you use a CLI tool to run an **exec** into the container.  
-  - You might have to specify which container if there’s more than one in the pod.  
-  - Permissions (RBAC) might affect who can do this.
+  - Typically use a CLI to exec into the container.
+  - If multiple containers, specify which container.
+  - Make sure you have the right RBAC privileges.
 </details>
 
 ---
@@ -106,9 +109,9 @@ You spot a small config mistake in a live resource. How would you fix it right a
 <details>
   <summary>Hints / Key Points</summary>
 
-  - You can **edit** the resource in place, but that can cause drift from your Git or Helm config.  
-  - If you’re using GitOps, the next sync might overwrite your live change.  
-  - Best practice is to fix it in your config repo or chart too.
+  - You can **edit** the resource in place with the CLI, but that can cause drift from Git or Helm config.
+  - If you’re using GitOps, the next sync might overwrite your manual fix.
+  - Best practice: fix it in your config repo or chart too.
 </details>
 
 ---
@@ -120,8 +123,8 @@ How do different services within the same cluster talk to each other?
 <details>
   <summary>Hints / Key Points</summary>
 
-  - They can use the **cluster DNS name**: `<service-name>.<namespace>.svc.cluster.local`.  
-  - The Service acts as a stable endpoint, even if pod IPs change.
+  - **Cluster DNS**: `<service-name>.<namespace>.svc.cluster.local`.
+  - A Service provides a stable endpoint, even if pod IPs change.
 </details>
 
 ---
@@ -133,9 +136,9 @@ What are sidecar containers and init containers, and why might you use them?
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **Init** containers run first to do setup tasks (like migrations or waiting for a dependency).  
-  - **Sidecar** containers run alongside the main app for logging, proxying, or monitoring.  
-  - They help split responsibilities in a single pod.
+  - **Init** containers run first to do setup tasks (migrations, config).
+  - **Sidecar** containers run alongside the main app for logging, proxying, etc.
+  - Helps separate concerns in a single pod.
 </details>
 
 ---
@@ -147,7 +150,57 @@ Is there a name length limit or other format rule for K8s resources?
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Most resource names follow **DNS label** rules (lowercase, alphanumeric + dashes).  
-  - Usually up to 63 characters.  
-  - Going past that or using invalid chars will cause validation errors.
+  - Usually follows **DNS label** rules (lowercase, up to 63 chars, alphanumeric + dashes).
+  - Some resource types might vary slightly, but typically the same constraints apply.
+</details>
+
+---
+
+## 11) Scenario: RBAC Permissions for Kaniko Builds
+**Question:**  
+You’re running an Azure DevOps agent in Kubernetes, which uses Kaniko to build and push Docker images. It’s failing because it can’t create needed resources.
+
+- How would you troubleshoot the missing permissions?
+- How can RBAC be configured to give Kaniko the required access?
+
+<details>
+  <summary>Hints / Key Points</summary>
+
+  - Check the Pod logs for permission errors (e.g., “forbidden”).
+  - Assign a **ServiceAccount** with an appropriate Role/RoleBinding that allows creating ConfigMaps, Pods, etc.
+  - Verify that the agent is using this ServiceAccount when building.
+</details>
+
+---
+
+## 12) Scenario: Kubernetes Pod Logs Lost After Crash
+**Question:**  
+A Kubernetes Pod crashes unexpectedly, and its logs are lost because the container restarts too quickly.
+
+- How would you recover logs from a previously crashed container?
+- How can you ensure logs are always accessible?
+
+<details>
+  <summary>Hints / Key Points</summary>
+
+  - Use the CLI to get logs from the **previous** container instance (`-p` option), if still available.
+  - Centralize logs in an external system like ELK, Loki, or FluentD.
+  - Ensure your app flushes logs frequently so they aren’t lost on crash.
+</details>
+
+---
+
+## 13) Scenario: Resource Exhaustion (OOMKills) in Pods
+**Question:**  
+A Kubernetes Pod crashes intermittently and is marked as OOMKilled.
+
+- How would you identify the cause of the memory spikes?
+- How do you stop the Pod from running out of memory in the future?
+
+<details>
+  <summary>Hints / Key Points</summary>
+
+  - Check resource usage with `kubectl top` or a monitoring tool.
+  - Increase the memory limit if the app truly needs more, or find memory leaks.
+  - Monitor usage over time, maybe use VPA (Vertical Pod Autoscaler) if appropriate.
 </details>

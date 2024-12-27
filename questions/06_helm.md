@@ -1,6 +1,6 @@
 # 06 – Helm
 
-Focuses on how Helm helps you package and deploy apps with charts, hooks, and templating.
+Helm chart usage, templating, hooks, etc.
 
 ## Table of Contents
 1. Chart Resource Requests/Limits
@@ -10,6 +10,7 @@ Focuses on how Helm helps you package and deploy apps with charts, hooks, and te
 5. Dynamic Resource Generation
 6. Handling API Deprecations
 7. TPL Helper File
+8. (Optional) Scenario: Deprecated APIs Causing ArgoCD Sync Failures w/ Helm
 
 ---
 
@@ -20,9 +21,9 @@ Why do we set resource requests and limits in a Helm chart, and how do we manage
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Ensures pods have the resources they need, and prevents them from hogging CPU/memory.  
-  - Helm’s `values.yaml` can set different requests/limits for dev vs prod.  
-  - This helps with cost control and cluster stability.
+  - Ensures pods have enough CPU/memory, prevents resource hogging.
+  - Helm `values.yaml` can differ for dev vs prod.
+  - Good for cost control and stability.
 </details>
 
 ---
@@ -34,9 +35,9 @@ What’s the difference between resource requests and limits in Kubernetes, and 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **Requests**: guaranteed resources the container is scheduled with.  
-  - **Limits**: the maximum resources a container can use.  
-  - Helm: can store these values in `values.yaml` and apply them automatically.
+  - **Requests**: minimum guaranteed resources.
+  - **Limits**: maximum allowed before throttling or OOMKill.
+  - Helm: store these in `values.yaml` for easy environment overrides.
 </details>
 
 ---
@@ -48,23 +49,23 @@ You want a job to run before your main app starts. How do you do that in Helm?
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Use **Helm hooks** (like `pre-install`) on that job.  
-  - The job runs first, and only when it’s done do we proceed to install the app.  
-  - Hooks can also run after install if needed.
+  - Use **Helm hooks** (`pre-install`, `post-install`) on that job.
+  - The job runs first; if it succeeds, Helm proceeds to install the rest.
+  - Weights can fine-tune the order of multiple hooks.
 </details>
 
 ---
 
 ## 4) Multiple Jobs Order
 **Question:**  
-If you have multiple jobs that each need to run in a certain order, how can Helm handle that?
+If you have multiple jobs that need to run in a certain sequence, how can Helm handle that?
 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - You can assign **weights** to hooks (lower weight runs first).  
-  - Or run them in a single job that goes step by step.  
-  - If they’re really separate, you might split them into subcharts.
+  - Hooks with **weights** (lower weight runs first).
+  - Or a single job that does tasks in order.
+  - Sometimes separate subcharts if they’re truly independent.
 </details>
 
 ---
@@ -76,9 +77,9 @@ You want to create several similar resources from a list in `values.yaml`. How d
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Use a `range` in your template: `{{- range .Values.myItems }}`.  
-  - Each item in the list can generate its own resource.  
-  - Keep repeated code in `_helpers.tpl` for a cleaner chart.
+  - Use `{{- range .Values.myItems }}` in the template.
+  - Each item in the list gets its own resource.
+  - `_helpers.tpl` can keep repeated logic DRY.
 </details>
 
 ---
@@ -90,9 +91,9 @@ A new Kubernetes version might deprecate older APIs. How do you update your Helm
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Replace old API versions in your templates (e.g. `extensions/v1beta1` → `apps/v1`).  
-  - Tools like **pluto** can scan for deprecated manifests.  
-  - Always test in a staging cluster before upgrading production.
+  - Replace old references (e.g., `extensions/v1beta1`) with `apps/v1`.
+  - Tools like **pluto** can scan for deprecated usage.
+  - Test in a lower environment or staging cluster first.
 </details>
 
 ---
@@ -104,7 +105,24 @@ What is the `tpl` function in Helm, and why might you use it?
 <details>
   <summary>Hints / Key Points</summary>
 
-  - `tpl` lets you treat a string as a Helm template during rendering.  
-  - Useful if you have user-provided or nested templates in your values.  
-  - You can store partial templates in `_helpers.tpl` and call them with `tpl`.
+  - `tpl` parses a string as a Helm template at runtime.
+  - Good for user-provided or nested templates in `values.yaml`.
+  - Keep advanced logic or partials in `_helpers.tpl`.
+</details>
+
+---
+
+## 8) (Optional) Scenario: Deprecated APIs Causing ArgoCD Sync Failures w/ Helm
+**Question:**  
+After upgrading the cluster, your Helm chart can’t sync in ArgoCD because it references deprecated APIs.
+
+- How do you find which APIs are outdated?
+- How do you fix them in your chart?
+
+<details>
+  <summary>Hints / Key Points</summary>
+
+  - Look at the chart’s templates for old API versions.
+  - Update them (e.g., `extensions/v1beta1` → `apps/v1`).
+  - Test with `helm template` or in a staging environment before going live.
 </details>
