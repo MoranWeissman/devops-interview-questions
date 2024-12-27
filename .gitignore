@@ -1,0 +1,13 @@
+# ---- Basic Ignored Files ----
+.DS_Store
+*.log
+*.tmp
+
+# ---- Node / Java / etc. (Add or remove as needed) ----
+node_modules/
+target/
+out/
+
+# ---- Python ----
+__pycache__/
+*.pyc
