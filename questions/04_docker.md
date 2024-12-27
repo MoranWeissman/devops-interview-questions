@@ -10,6 +10,8 @@ Discusses container basics, Dockerfiles, and best practices.
 5. Reducing Docker Build Time
 6. Docker-in-Docker or Alternatives
 7. Other Container Build Tools
+8. **Scenario: Kaniko Image Build Failing Without Docker Daemon**
+9. (Optional) RBAC for Kaniko? (See `05_kubernetes.md` for RBAC if needed)
 
 ---
 
@@ -20,9 +22,9 @@ What’s the difference between Docker as a tool and the concept of a container?
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **Docker** is a platform for building and managing containers.  
-  - A **container** is basically an isolated environment that holds everything an app needs to run.  
-  - Docker is popular, but there are other container runtimes too.
+  - **Docker** is a platform for building/managing containers.
+  - A **container** is an isolated environment bundling the app and dependencies.
+  - Docker is popular, but other runtimes exist (Podman, Containerd).
 </details>
 
 ---
@@ -34,9 +36,9 @@ A coworker is confused about `ENTRYPOINT` and `CMD` in a Dockerfile. How do you 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **ENTRYPOINT**: The main command the container will always run.  
-  - **CMD**: Default arguments or parameters that can be overridden.  
-  - Usually you set `ENTRYPOINT` to the main process and `CMD` to any optional flags.
+  - **ENTRYPOINT**: The main command the container will always run.
+  - **CMD**: Default arguments that can be overridden at runtime.
+  - Typically, you set `ENTRYPOINT` to the main process and use `CMD` for optional flags.
 </details>
 
 ---
@@ -48,9 +50,9 @@ You have a huge Docker image based on a full JDK. You want to reduce its size. H
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Use **multi-stage builds**, or switch to a smaller base (like a JRE or Alpine).  
-  - Clean up build caches or unnecessary files.  
-  - Smaller images pull and start faster, and are usually more secure (less surface area).
+  - Use **multi-stage builds** or switch to a smaller base (JRE or Alpine).
+  - Clean up leftover artifacts (logs, caches).
+  - Smaller images pull faster, less storage overhead, fewer security risks.
 </details>
 
 ---
@@ -62,9 +64,9 @@ You need to use some private tokens or credentials during the build. How do you 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **ARG** for build-time secrets (not kept in the finished image).  
-  - Or inject secrets at runtime using environment variables.  
-  - Don’t store secrets in plaintext in the Dockerfile or version control.
+  - **ARG** for build-time secrets (not present in the final image).
+  - Inject secrets at runtime via environment variables or secret managers.
+  - Don’t store secrets in plain text in the Dockerfile or version control.
 </details>
 
 ---
@@ -76,9 +78,9 @@ Your Docker builds take too long, especially for .NET or Java projects. How can 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Arrange Dockerfile steps so you install dependencies first (which won’t change often).  
-  - Cache layers so you don’t rebuild the entire image every time.  
+  - Reorder Dockerfile steps to install dependencies first, so you can cache them.
   - Use multi-stage builds to keep final images small.
+  - Possibly store or share a build cache between CI runs.
 </details>
 
 ---
@@ -90,9 +92,9 @@ Sometimes we build Docker images inside a container during CI. Why do we do that
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **Docker-in-Docker** can help if you don’t have direct access to a Docker daemon.  
-  - But it needs privileged mode, which can be less secure.  
-  - Alternatives: **Kaniko**, **Buildah**, or **Podman**, which can build images without needing a full Docker daemon.
+  - **Docker-in-Docker**: runs a Docker daemon inside a container, but can be less secure.
+  - Alternatives: **Kaniko**, **Buildah**, **Podman** to build without a Docker daemon.
+  - Reduces the need for privileged mode in CI.
 </details>
 
 ---
@@ -104,7 +106,24 @@ If Docker wasn’t an option, what else could you use to build and run container
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **Podman**, **Buildah**, or **Containerd** under the hood.  
-  - For Java, **Jib** can build containers natively.  
-  - Some environments rely on Docker-like tools but aren’t strictly Docker.
+  - **Podman**, **Buildah**, **Containerd**.
+  - For Java, **Jib** can build containers without a Docker daemon.
+  - Some environments rely on containerd or rkt (less common nowadays).
+</details>
+
+---
+
+## 8) Scenario: Kaniko Image Build Failing Without Docker Daemon
+**Question:**  
+You are using **Kaniko** to build and push Docker images in a Kubernetes Pod, but the build fails due to the absence of a Docker daemon.
+
+- What steps would you take to troubleshoot Kaniko’s failure?
+- How can you configure it to build images without a Docker daemon?
+
+<details>
+  <summary>Hints / Key Points</summary>
+
+  - Verify the **Kaniko** Pod has access to your Dockerfile, context, and registry credentials.
+  - Kaniko doesn’t need a Docker daemon; pass `--context` and `--destination` parameters correctly.
+  - Ensure you have the right RBAC permissions if it needs to create or manage certain resources in K8s.
 </details>
