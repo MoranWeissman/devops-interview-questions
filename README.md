@@ -1,41 +1,54 @@
 # DevOps Interview Questions
 
-A comprehensive collection of DevOps-related interview questions and home assignments.  
+A comprehensive collection of DevOps-related interview questions and scenario-based exercises.  
 This repository is designed to help both **interviewers** and **candidates** prepare for a wide variety of DevOps topics.
 
 ---
 
 ## Table of Contents
 
-1. [CI](./01_ci/questions.md)  
-2. [CD](./02_cd/questions.md)  
-3. [Docker](./03_docker/questions.md)  
-4. [Kubernetes](./04_kubernetes/questions.md)  
-5. [Helm](./05_helm/questions.md)  
-6. [Secrets](./06_secrets/questions.md)  
-7. [Shift Left](./07_shift-left/questions.md)  
-8. [Security](./08_security/questions.md)  
-9. [GitOps](./09_gitops/questions.md)  
-10. [General](./general.md)  
-11. [Home Assignments](./home-assignments/assignment_1.md)  
+1. [Continuous Integration (CI)](./questions/01_ci.md)  
+2. [Continuous Deployment (CD)](./questions/02_cd.md)  
+3. [GitOps & ArgoCD](./questions/03_gitops.md)  
+4. [Docker](./questions/04_docker.md)  
+5. [Kubernetes](./questions/05_kubernetes.md)  
+6. [Helm](./questions/06_helm.md)  
+7. [Secrets](./questions/07_secrets.md)  
+8. [Security](./questions/08_security.md)  
+9. [Shift Left](./questions/09_shift_left.md)  
+10. [General / Architecture](./questions/10_general.md)  
+11. [Home Assignments](./home-assignments/assignment_1.md)
+
+> **Note**: If you have older references to `03_docker/questions.md` or similar, please update them to the new file paths shown above.
 
 ---
 
 ## How to Use
 
-- **Interviewers**: Pick relevant questions from a folder (e.g., Docker) or use the assignments to assess practical skills.  
-- **Candidates**: Review questions and craft your own answers first; check the hints or references to expand your knowledge.
+- **Interviewers**: 
+  - Pick relevant topics (e.g., Docker, Kubernetes) and select scenario-based questions to evaluate practical experience.  
+  - Use the [home assignments](./home-assignments/assignment_1.md) to assess coding and configuration skills under real-world conditions.
+
+- **Candidates**:  
+  - Start by reviewing questions in your chosen topic (e.g., `01_ci.md`) and try answering on your own.  
+  - Expand your knowledge by reading the hidden hints in the `<details>` blocks.  
+  - Check scenario-based questions for real-world problem-solving practice.
 
 ---
 
 ## Contributing
 
-Contributions are encouraged! See our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to add your own questions or home assignments.
+Contributions are always welcome!  
+- To add or edit questions, please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for the recommended structure and style guidelines.  
+- You can also submit additional scenario-based exercises or home assignments that fit the existing format.
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the [MIT License](./LICENSE).  
+Feel free to use it as a reference or foundation for your own DevOps interview prep or training material.
+
+---
 
 Enjoy and good luck with your interviews!
