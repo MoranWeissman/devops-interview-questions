@@ -1,33 +1,57 @@
 # 10 – General / Architecture
 
-For broader conceptual or cross-topic questions, including architecture patterns.
+Covers broader DevOps or architecture topics.
+
+## Table of Contents
+1. Stateless vs Stateful
+2. DevOps Culture
+3. Scenario: Handling a Critical Outage
+4. Additional General Questions
+
+---
 
 ## 1) Stateless vs Stateful
 **Question:**  
-Explain the difference between stateless and stateful applications. Why does it matter for scaling or resilience?
+What’s the main difference between stateless and stateful apps, and how does this affect scaling?
 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - **Stateless**: no session data persisted in-memory between requests → easier to scale, more resilient.
-  - **Stateful**: maintains session/data in memory, can be more complex (requires persistent storage, specialized scaling).
+  - **Stateless**: Doesn’t keep data in memory across requests; easier to scale horizontally.  
+  - **Stateful**: Maintains sessions or data that might need external storage. Harder to scale.  
+  - Many modern microservices aim to be stateless for simplicity.
 </details>
 
 ---
 
 ## 2) DevOps Culture
 **Question:**  
-What does “DevOps culture” mean, and how does it impact an engineering organization?
+How would you describe “DevOps culture,” and what does it change compared to older dev-and-ops silos?
 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Emphasizes collaboration between Dev & Ops.
-  - Shared responsibility, shorter release cycles.
-  - Strong focus on automation, CI/CD, feedback loops.
+  - Focus on **collaboration** and **automation**.  
+  - Shared responsibility for stability, performance, and delivery.  
+  - Closer feedback loops, continuous integration, continuous delivery.
 </details>
 
 ---
 
-## 3) Additional General Questions
-- *(Add anything else that doesn’t strictly belong to the other nine topics.)*
+## 3) Scenario: Handling a Critical Outage
+**Question (Scenario):**  
+Production goes down during peak hours. Describe how you’d handle the incident, from detecting the problem to resolving it.
+
+<details>
+  <summary>Hints / Key Points</summary>
+
+  - **Quick triage**: check logs, monitoring, recent changes, and alerts.  
+  - Possibly roll back the last deployment if that caused it.  
+  - Communicate clearly with stakeholders.  
+  - After fixing, do a post-mortem to learn from it.
+</details>
+
+---
+
+## 4) Additional General Questions
+- *(Placeholder for any other broad DevOps or architecture topics.)*

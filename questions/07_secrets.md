@@ -1,28 +1,35 @@
 # 07 – Secrets Management
 
-Focuses on how to handle sensitive data in DevOps.
+Deals with handling sensitive data like passwords, tokens, and keys in DevOps.
+
+## Table of Contents
+1. What Are Secrets & Why
+2. Storing and Managing Secrets
+
+---
 
 ## 1) What Are Secrets & Why
 **Question:**  
-Why do we store credentials as “secrets,” and what does that mean?
+Organizations always talk about storing things like passwords or tokens as “secrets.” What’s the big deal?
 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Sensitive data like passwords, tokens, API keys.
-  - Must be encrypted at rest and in transit.
-  - Avoid committing them to git repos.
+  - It keeps sensitive data out of plain text in code or config.  
+  - Minimizes risk if repos or logs get exposed.  
+  - In Kubernetes, a Secret is base64-encoded, but a real secrets manager provides better security.
 </details>
 
 ---
 
 ## 2) Storing and Managing Secrets
-**Question:**  
-Where do you usually store secrets, and how do you manage them?
+**Question (Scenario):**  
+Your team has many credentials for different microservices. How can you safely store and use them without embedding them in code?
 
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Tools: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, or Kubernetes Secrets (with caution).
-  - Implement RBAC, audit logs, and rotation policies.
+  - Use a **secrets manager** (like HashiCorp Vault, AWS Secrets Manager, Azure Key Vault).  
+  - Give each service controlled access.  
+  - Automate secret rotation and auditing, especially if you handle sensitive data.
 </details>
