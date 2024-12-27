@@ -122,7 +122,13 @@ After upgrading the cluster, your Helm chart can’t sync in ArgoCD because it r
 <details>
   <summary>Hints / Key Points</summary>
 
-  - Look at the chart’s templates for old API versions.
-  - Update them (e.g., `extensions/v1beta1` → `apps/v1`).
-  - Test with `helm template` or in a staging environment before going live.
+  - Look at the chart’s templates for older API versions (e.g., `extensions/v1beta1`).
+  - Update them to the newer equivalents (e.g., `apps/v1`).
+  - **Helm 3.12+** offers a **server-side dry run** via:
+    ```bash
+    helm upgrade --dry-run=server ...
+    ```
+    This checks the manifests against the actual cluster APIs, catching potential deprecations or validation issues before you apply them.
+  - You can also use tools like **Pluto** to scan for deprecated or removed APIs. 
+  - Test in a non-production cluster to confirm everything works with the new APIs.
 </details>
