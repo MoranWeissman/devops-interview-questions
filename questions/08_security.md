@@ -17,7 +17,8 @@ You want to catch vulnerabilities early. How can you add security steps to your 
   <summary>Hints / Key Points</summary>
 
   - **Static code analysis** (SAST) to look for known flaws.  
-  - **Image scanning** for Docker containers.  
+  - **Image scanning** for Docker containers.
+  - **SCA scanning** Analyzing open-source and third-party components in the application for vulnerabilities and licensing issues.
   - Dependency checks to flag libraries with known CVEs.
 </details>
 
