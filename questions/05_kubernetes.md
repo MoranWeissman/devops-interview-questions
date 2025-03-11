@@ -98,6 +98,7 @@ You need to run commands inside a container for debugging. How do you do that in
   - Typically use a CLI to exec into the container.
   - If multiple containers, specify which container.
   - Make sure you have the right RBAC privileges.
+  - Use `kubectl debug` to create a temporary debugging container in the same Pod and use that to debug the target container.
 </details>
 
 ---
@@ -186,6 +187,7 @@ A Kubernetes Pod crashes unexpectedly, and its logs are lost because the contain
   - Use the CLI to get logs from the **previous** container instance (`-p` option), if still available.
   - Centralize logs in an external system like ELK, Loki, or FluentD.
   - Ensure your app flushes logs frequently so they aren’t lost on crash.
+  - Attach a log volume to the Pod to persist logs and access them later.
 </details>
 
 ---
@@ -203,4 +205,20 @@ A Kubernetes Pod crashes intermittently and is marked as OOMKilled.
   - Check resource usage with `kubectl top` or a monitoring tool.
   - Increase the memory limit if the app truly needs more, or find memory leaks.
   - Monitor usage over time, maybe use VPA (Vertical Pod Autoscaler) if appropriate.
+</details>
+
+---
+
+## 14) Scenario: Node Debugging
+**Question:**  
+How do you debug issues on a Kubernetes node, such as accessing the node's file system or checking running services?
+
+<details>
+  <summary>Hints / Key Points</summary>
+
+  - Use `kubectl debug` to create a temporary debugging pod on the node.
+  - Access the node's file system and inspect logs or configuration files.
+  - Check running services and their statuses.
+  - Use tools like `top`, `ps`, and `netstat` to monitor resource usage and network connections.
+  - Access pod/container logs directly by accessing the logs saved using a volume mount or a pre-defined log path for pods/containers.
 </details>
